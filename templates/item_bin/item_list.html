@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container text-center">
+  <table class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Name</th>
+      <th scope="col">Price</th>
+    </tr>
+  </thead>
+  <tbody class="table-group-divider">
+  {% for item in items %}
+    <tr>
+      <th scope="row">{{item.id}}</th>
+      <td><a href="{% url 'item_bin:item-detail' pk=item.id %}">{{item.name}}</a></td>
+      <td>{{item.price}} $</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+</div>
+
+{% endblock %}
