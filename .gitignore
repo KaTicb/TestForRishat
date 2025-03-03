@@ -6,6 +6,10 @@ __pycache__/
 # C extensions
 *.so
 
+# Prod settings & local settings
+base/prod_settings.py
+base/local_settings.py
+
 # Distribution / packaging
 .Python
 build/
