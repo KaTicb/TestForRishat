@@ -7,8 +7,8 @@ __pycache__/
 *.so
 
 # Prod settings & local settings
-base/prod_settings.py
-base/local_settings.py
+#base/prod_settings.py
+#base/local_settings.py
 
 # Distribution / packaging
 .Python
