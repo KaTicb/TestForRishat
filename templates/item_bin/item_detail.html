@@ -4,6 +4,7 @@
 <div class="container text-left">
     <h1>{{item.name}}</h1>
     <p>{{item.price}} $</p>
+    <p>Quantity: {{item.quantity}}</p>
     <p>{{item.description}}</p>
 
     <form action="{% url 'item_bin:buy_item' pk=item.id %}" method="POST">
