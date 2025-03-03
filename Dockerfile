@@ -11,7 +11,6 @@ RUN mkdir -p $APP_HOME
 RUN mkdir -p $APP_HOME/staticfiles
 WORKDIR $APP_HOME
 
-RUN pip install --upgrade pip
 COPY ./requirements.txt .
 RUN pip install -r requirements.txt
 
