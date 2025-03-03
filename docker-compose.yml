@@ -1,10 +1,15 @@
 services:
   web:
     build: ./
-    command: python manage.py runserver 0.0.0.0:8000
+    command: gunicorn base.wsgi:application --bind 0.0.0.0:8000
     volumes:
       - ./:/usr/src/app/
+    expose:
+      - 8000
+
+  nginx:
+    build: ./nginx
     ports:
-      - 8000:8000
-#    env_file:
-#      - ./.env.dev
+      - 8123:80
+    depends_on:
+      - web
