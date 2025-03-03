@@ -12,7 +12,7 @@ elif (BASE_DIR / 'base' / 'prod_settings.py').exists():
 else:
     raise ImportError("Settings file (local_settings.py or prod_settings.py) not found")
 
-STATIC_URL = '/static/'
+STATIC_URL = 'static/'
 
 # initialize dotenv
 dotenv.load_dotenv(BASE_DIR / '.env')

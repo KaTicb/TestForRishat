@@ -4,19 +4,19 @@ services:
       context: ./
       dockerfile: Dockerfile
     command: gunicorn base.wsgi:application --bind 0.0.0.0:8000
-#    volumes:
-#      - static_volume:/home/worker_user/app/web/static
+    volumes:
+      - static_volume:/home/worker_user/TestForRishat/web/staticfiles
     expose:
       - 8000
 
   nginx:
     build: ./nginx
-#    volumes:
-#      - static_volume:/home/worker_user/app/web/static
+    volumes:
+      - static_volume:/home/worker_user/TestForRishat/web/staticfiles
     ports:
       - 80:80
     depends_on:
       - web
 
-#volumes:
-#  static_volume:
+volumes:
+  static_volume:
