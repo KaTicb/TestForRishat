@@ -14,7 +14,7 @@ services:
 #    volumes:
 #      - static_volume:/home/worker_user/app/web/static
     ports:
-      - 8123:80
+      - 80:80
     depends_on:
       - web
 
