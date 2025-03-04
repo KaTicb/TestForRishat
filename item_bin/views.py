@@ -120,18 +120,18 @@ class BuySessionOrderView(APIView):
                             'unit_amount': total_price,
                         },
                         'quantity': 1,
-                        'tax_rates': [tax_rate.id,],
+                        'tax_rates': [tax_rate.id, ] if tax_rate else None,
                     },
                 ],
                 discounts=[
                     {
                         'coupon': discount_coupon.id  # ID созданного купона
                     }
-                ],
+                ] if discount_coupon else None,
                 metadata={
                     'original_amount': str(total_price),
-                    'discount_amount': str(discount_coupon.amount_off),
-                    'tax_amount': str(tax_rate.percentage)
+                    'discount_amount': str(discount_coupon.amount_off) if discount_coupon else None,
+                    'tax_amount': str(tax_rate.percentage) if tax_rate else None
                 },
                 mode='payment',
                 success_url=success_url,

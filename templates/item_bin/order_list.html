@@ -3,7 +3,7 @@
 <div class="container text-center">
 
     {% for order in orders %}
-    <h1>#{{order.id}}   {{order.user}}'s order</h1>
+    <h1>#{{order.id}} {{order.user}}'s order</h1>
     <table class="table">
         <thead>
         <tr>
@@ -24,14 +24,20 @@
         {% endfor %}
         </tbody>
     </table>
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <form action="{% url 'item_bin:buy_order' pk=order.id %}" method="POST">
+                    {% csrf_token %}
+                    <button class="btn btn-secondary" type="submit" id="buy-button">Buy</button>
+                </form>
+            </div>
 
-    <form action="{% url 'item_bin:buy_order' pk=order.id %}" method="POST">
-        {% csrf_token %}
-        <button class="btn btn-secondary" type="submit" id="buy-button">Buy</button>
-    </form>
-
-    <h3>Discount: -{{order.discount}} %</h3>
-    <h3>Tax: +{{order.tax}} %</h3>
+            <div class="col"><h3>Discount: -{{order.discount}} %</h3></div>
+            <div class="col"><h3>Tax: +{{order.tax}} %</h3></div>
+        </div>
+    </div>
+    <div style="margin-top: 3em"></div>
     {% endfor %}
 </div>
 {% endblock %}
