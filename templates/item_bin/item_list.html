@@ -8,6 +8,7 @@
             <th scope="col">Name</th>
             <th scope="col">Price</th>
             <th scope="col">Quantity</th>
+            <th scope="col">Currency</th>
         </tr>
         </thead>
         <tbody class="table-group-divider">
@@ -17,6 +18,7 @@
             <td><a href="{% url 'item_bin:item-detail' pk=item.id %}">{{item.name}}</a></td>
             <td>{{item.price}} $</td>
             <td>{{item.quantity}}</td>
+            <td>{{item.currency}}</td>
         </tr>
         {% endfor %}
         </tbody>

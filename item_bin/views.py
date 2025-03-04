@@ -62,7 +62,7 @@ class BuyIntendItemView(APIView):
 
             payment_intent = stripe.PaymentIntent.create(
                 amount=total_price,
-                currency='usd',
+                currency=item.currency,
                 payment_method_types=['card']
             )
 

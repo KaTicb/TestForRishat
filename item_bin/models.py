@@ -1,10 +1,20 @@
+from random import choices
+
 from django.db import models
+from django.template.defaultfilters import default
+
 
 class Item(models.Model):
+    CURRENCY_CHOICES = (
+        ('usd', 'US Dollar'),
+        ('eur', 'Euro'),
+    )
+
     name = models.CharField(max_length=40, verbose_name='Name')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Item price')
     quantity = models.PositiveIntegerField(verbose_name='Quantity', default=1)
     description = models.TextField(verbose_name='Description of item')
+    currency = models.CharField(max_length=3, choices=CURRENCY_CHOICES, default='usd', verbose_name='Currency')
 
     objects = models.Manager()
 
