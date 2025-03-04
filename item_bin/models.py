@@ -29,3 +29,30 @@ class Order(models.Model):
         verbose_name = 'Order'
         verbose_name_plural = 'Orders'
 
+
+class Discount(models.Model):
+    discount = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Discount in percents.')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Order')
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Discount'
+        verbose_name_plural = 'Discounts'
+
+    def __str__(self):
+        return str(self.order)
+
+
+class Tax(models.Model):
+    tax = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Tax in percents.')
+    order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Order')
+
+    objects = models.Manager()
+
+    class Meta:
+        verbose_name = 'Tax'
+        verbose_name_plural = 'Taxes'
+
+    def __str__(self):
+        return str(self.order)

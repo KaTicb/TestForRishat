@@ -1,4 +1,5 @@
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
+from django.template.defaultfilters import default
 from django.urls import reverse
 from django.shortcuts import render
 
@@ -37,42 +38,40 @@ class OrderView(ModelViewSet):
 
     queryset = Order.objects.all()
 
+    for order in queryset:
+        order.tax = Tax.objects.filter(order=order).first()
+        order.tax = order.tax.tax if order.tax else 0.0
+
+        order.discount = Discount.objects.filter(order=order).first()
+        order.discount = order.discount.discount if order.discount else 0.0
+
     def list(self, request, *args, **kwargs):
         return Response({'orders': self.queryset}, template_name='item_bin/order_list.html')
 
 
-class BuySessionItemView(APIView):
+class BuyIntendItemView(APIView):
 
     def post(self, request, pk):
-
-        item = Item.objects.get(id=pk)
-
-        success_url = request.build_absolute_uri(reverse('item_bin:success'))
-        cancel_url = request.build_absolute_uri(reverse('item_bin:cancel'))
+        if request.method != 'POST':
+            return JsonResponse({'error': 'Only POST requests are accepted'}, status=405)
 
         try:
-            checkout_session = stripe.checkout.Session.create(
-                line_items=[
-                    {
-                        'price_data': {
-                            'currency': 'usd',
-                            'product_data': {
-                                'name': item.name,
-                            },
-                            'unit_amount': int(item.price * 100),
-                        },
-                        'quantity': item.quantity,
-                    },
-                ],
-                mode='payment',
-                success_url=success_url,
-                cancel_url=cancel_url,
+
+            item = Item.objects.get(id=pk)
+            total_price = int(item.price * item.quantity * 100)
+
+            payment_intent = stripe.PaymentIntent.create(
+                amount=total_price,
+                currency='usd',
+                payment_method_types=['card']
             )
 
-            return HttpResponseRedirect(checkout_session.url)
+            return JsonResponse({
+                'clientSecret': payment_intent['client_secret'],
+                'paymentIntentId': payment_intent['id']
+            })
         except Exception as e:
-            print(str(e))
-            return HttpResponseRedirect(cancel_url)
+            return JsonResponse({'error': str(e)}, status=400)
 
 
 class BuySessionOrderView(APIView):
@@ -80,12 +79,35 @@ class BuySessionOrderView(APIView):
     def post(self, request, pk):
 
         order = Order.objects.get(id=pk)
+        discount = Discount.objects.filter(order=order).first()
+        tax = Tax.objects.filter(order=order).first()
 
         total_price = int(sum([item.price * item.quantity for item in order.items.all()]) * 100)
 
         success_url = request.build_absolute_uri(reverse('item_bin:success'))
         cancel_url = request.build_absolute_uri(reverse('item_bin:cancel'))
 
+        # tax
+        if tax:
+            tax_rate = stripe.TaxRate.create(
+                display_name="Sales Tax",
+                description="Sales tax",
+                percentage=tax.tax,
+                inclusive=False,
+            )
+        else:
+            tax_rate = None
+
+        # discount
+        if discount:
+            discount_coupon = stripe.Coupon.create(
+                percent_off=discount.discount,
+                duration='forever',
+            )
+        else:
+            discount_coupon = None
+
+        # payment
         try:
             checkout_session = stripe.checkout.Session.create(
                 line_items=[
@@ -98,8 +120,19 @@ class BuySessionOrderView(APIView):
                             'unit_amount': total_price,
                         },
                         'quantity': 1,
+                        'tax_rates': [tax_rate.id,],
                     },
                 ],
+                discounts=[
+                    {
+                        'coupon': discount_coupon.id  # ID созданного купона
+                    }
+                ],
+                metadata={
+                    'original_amount': str(total_price),
+                    'discount_amount': str(discount_coupon.amount_off),
+                    'tax_amount': str(tax_rate.percentage)
+                },
                 mode='payment',
                 success_url=success_url,
                 cancel_url=cancel_url,

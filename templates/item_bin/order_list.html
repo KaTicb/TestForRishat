@@ -30,6 +30,8 @@
         <button class="btn btn-secondary" type="submit" id="buy-button">Buy</button>
     </form>
 
+    <h3>Discount: -{{order.discount}} %</h3>
+    <h3>Tax: +{{order.tax}} %</h3>
     {% endfor %}
 </div>
 {% endblock %}
